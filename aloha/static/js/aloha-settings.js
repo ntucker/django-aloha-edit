@@ -1,0 +1,1 @@
+Aloha = window.Aloha || {};

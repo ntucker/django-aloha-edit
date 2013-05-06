@@ -1,0 +1,18 @@
+{% extends "site_base.html" %}
+{% load compress %}
+
+
+{% block extra_style_external %}
+{% compress css %}
+<link href="{{STATIC_URL}}aloha/css/aloha.css" type="text/css" media="all" rel="stylesheet" />
+{% endcompress %}
+{% endblock %}
+{% block extra_script_external %}
+{% compress js %}
+<script type="text/javascript" src="{{STATIC_URL}}js/aloha-settings.js"></script>
+{% endcompress %}
+<script type="text/javascript" src="{{STATIC_URL}}aloha/lib/aloha.js"></script>
+{% compress js %}
+<script type="text/javascript" src="{{STATIC_URL}}js/init_aloha_form.js" defer></script>
+{% endcompress %}
+{% endblock %}
