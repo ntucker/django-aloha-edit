@@ -53,7 +53,27 @@ define([
 			postProcessFn();
 		}
 	});
+	var SpoilerBlock = block.AbstractBlock.extend({
+		title: 'SpoilerBlock',
+		getSchema: function() {
+			return {
+				'title': {
+					type: 'string',
+					label: 'Spoiler title'
+				},
+			}
+		},
+		init: function($element, postProcessFn) {
+			this.attr('title', $element.find('.accordion-toggle').text());
+			postProcessFn();
+		},
+		update: function($element, postProcessFn) {
+			$element.find('.accordion-toggle').text(this.attr('title'));
+			postProcessFn();
+		}
+	});
 	return {
 		ThumbnailBlock: ThumbnailBlock,
+		SpoilerBlock: SpoilerBlock,
 	};
 });

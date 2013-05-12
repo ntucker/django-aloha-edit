@@ -30,6 +30,7 @@ define([
 		init : function () {
 			var plugin = this;
 			BlockManager.registerBlockType('ThumbnailBlock', bootstrapBlock.ThumbnailBlock);
+			BlockManager.registerBlockType('SpoilerBlock', bootstrapBlock.SpoilerBlock);
 			var spoilerbutton = Ui.adopt("insertSpoilers", Button, {
 				tooltip: "spoiler",
 				scope: 'Aloha.continuoustext',
@@ -57,15 +58,28 @@ define([
 			
 			
 			this._addThumbnailUI();
+			this._addSpoilerUI();
 			
 			this.bindInteractions();
 		},
+		_addSpoilerUI: function() {
+			var scope = 'Aloha.Block.SpoilerBlock';
+			this._spoilerTitleField = Ui.adopt("spoilerTitle", Text, {
+				scope: scope,
+				setValue: function(value) {
+					BlockManager._activeBlock.attr('title', value);
+				},
+				init: function() {
+					this._super();
+					this.element = UiUtil.wrapWithLabel("Title", this.element);
+				},
+			});
+			
+		},
 		_addThumbnailUI: function() {
-			var plugin = this;
 			var scope = 'Aloha.Block.ThumbnailBlock';
 
 			this._thumbnailSrcField = Ui.adopt("thumbnailSrc", Text, {
-				label:'src',
 				scope: scope,
 				setValue: function(value) {
 					BlockManager._activeBlock.attr('image', value);
@@ -76,7 +90,6 @@ define([
 				},
 			});
 			this._thumbnailCaptionField = Ui.adopt("thumbnailCaption", Text, {
-				label:'caption',
 				scope: scope,
 				setValue: function(value) {
 					BlockManager._activeBlock.attr('caption', value);
@@ -116,21 +129,28 @@ define([
 		bindInteractions: function () {
 			var plugin = this;
 			Aloha.bind( 'aloha-editable-created', function (event, editable) {
-				jQuery('.accordion-inner, .accordion-toggle', editable.obj).addClass('aloha-editable');
-				jQuery('.accordion-group', editable.obj).alohaBlock();
+				jQuery('.accordion-inner', editable.obj).addClass('aloha-editable');
+				jQuery('.accordion-group', editable.obj).alohaBlock({'aloha-block-type': 'SpoilerBlock'}).find('.collapse').collapse('show');
 
 				jQuery('.thumbnail', editable.obj).alohaBlock({'aloha-block-type': 'ThumbnailBlock'});
 				jQuery('.thumbnail img', editable.obj).addClass('aloha-ui'); //this prevents the image plugin from activating
 			});
 			Aloha.bind( 'aloha-editable-destroyed', function (event, editable) {
-				jQuery('.accordion-inner, .accordion-toggle', editable.obj).mahalo();
-				jQuery('.accordion-group', editable.obj).mahaloBlock();
+				jQuery('.accordion-inner', editable.obj).mahalo();
+				var spoilers = jQuery('.accordion-group', editable.obj);
+				jQuery('.collapse', spoilers).collapse('hide');
+				spoilers.mahaloBlock();
 
 				jQuery('.thumbnail', editable.obj).mahaloBlock();
 			});
 			BlockManager.bind('block-activate', function (blocks) {
-				plugin._thumbnailSrcField.element.find('input').val(blocks[0].attr('image'));
-				plugin._thumbnailCaptionField.element.find('input').val(blocks[0].attr('caption'));
+				if (blocks[0].title == "ThumbnailBlock") {
+					plugin._thumbnailSrcField.element.find('input').val(blocks[0].attr('image'));
+					plugin._thumbnailCaptionField.element.find('input').val(blocks[0].attr('caption'));
+				}
+				else if (blocks[0].title == "SpoilerBlock") {
+					plugin._spoilerTitleField.element.find('input').val(blocks[0].attr('title'));
+				}
 			});
 		},
 		createSpoiler: function() {
@@ -139,20 +159,21 @@ define([
 				var id = GENTICS.Utils.guid();
 				var spoiler = jQuery('<div class="accordion-group"> \
 						<div class="accordion-heading"> \
-						<a class="accordion-toggle aloha-editable" data-toggle="collapse" href="#'+id+'" rel="nofollow" target="_blank" title="Show Spoiler">Spoiler</a> \
+						<a class="accordion-toggle" data-toggle="collapse" href="#'+id+'" rel="nofollow" target="_blank" title="Show Spoiler">Spoiler</a> \
 						</div> \
 						<div class="accordion-body collapse" id="'+id+'" style=""> \
 						<div class="accordion-inner aloha-editable"></div> \
 						</div> \
 						</div> \
 				');
-				spoiler.alohaBlock();
+				spoiler.alohaBlock({'aloha-block-type': 'SpoilerBlock'});
 
 				GENTICS.Utils.Dom.insertIntoDOM(
 						spoiler,
 						Aloha.Selection.getRangeObject(),
 						Aloha.activeEditable.obj
 				);
+				jQuery('.collapse', spoiler).collapse('show');
 			}
 		},
 		createThumbnail: function() { //pull-left, pull-right
