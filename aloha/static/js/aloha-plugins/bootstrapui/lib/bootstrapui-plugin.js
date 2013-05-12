@@ -71,6 +71,7 @@ define([
 				},
 				init: function() {
 					this._super();
+					this.element.css('width', '400px');
 					this.element = UiUtil.wrapWithLabel("Title", this.element);
 				},
 			});
@@ -86,6 +87,7 @@ define([
 				},
 				init: function() {
 					this._super();
+					this.element.css('width', '240px');
 					this.element = UiUtil.wrapWithLabel("Source", this.element);
 				},
 			});
@@ -96,6 +98,7 @@ define([
 				},
 				init: function() {
 					this._super();
+					this.element.css('width', '240px');
 					this.element = UiUtil.wrapWithLabel("Caption", this.element);
 				},
 			});
@@ -167,6 +170,7 @@ define([
 						</div> \
 				');
 				spoiler.alohaBlock({'aloha-block-type': 'SpoilerBlock'});
+				BlockManager.getBlock(spoiler).activate();
 
 				GENTICS.Utils.Dom.insertIntoDOM(
 						spoiler,
@@ -184,6 +188,7 @@ define([
 			if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 				var thumbnail = jQuery('<div class="thumbnail"><img src="" class="aloha-ui" /><div class="caption">Caption</div></div>');
 				thumbnail.alohaBlock({'aloha-block-type': 'ThumbnailBlock'});
+				BlockManager.getBlock(thumbnail).activate();
 
 				GENTICS.Utils.Dom.insertIntoDOM(
 						thumbnail,
