@@ -48,8 +48,8 @@ define([
 				$element.removeClass('pull-right');
 			}
 
-			$element.find('img').attr('src', this.attr('image'));
-			$element.find('.caption').text(this.attr('caption'));
+			$element.find('img').first().attr('src', this.attr('image'));
+			$element.find('.caption').first().text(this.attr('caption'));
 			postProcessFn();
 		}
 	});
@@ -68,7 +68,7 @@ define([
 			postProcessFn();
 		},
 		update: function($element, postProcessFn) {
-			$element.find('.accordion-toggle').text(this.attr('title'));
+			$element.find('.accordion-toggle').first().text(this.attr('title'));
 			postProcessFn();
 		}
 	});

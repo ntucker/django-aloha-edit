@@ -18,7 +18,7 @@ define([
 			postProcessFn();
 		},
 		update: function($element, postProcessFn) {
-			$element.find('iframe').attr('src', this.attr('source'));
+			$element.find('iframe').first().attr('src', this.attr('source'));
 			postProcessFn();
 		}
 	});
