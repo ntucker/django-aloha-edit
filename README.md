@@ -1,14 +1,16 @@
 django-aloha-edit
 =================
 
-Provides easy integration of the Aloha Editor into your Django app
+Provides easy integration of the Aloha Editor into your Django app as well as several additional Aloha plugins.
 
 Installing
 ----------
-    pip install -e "git+https://github.com/ntucker/django-aloha-edit#egg=aloha"
+
+    pip install django-aloha-edit
 
 Usage
 -----
+
 Using the HTMLField:
 
     from aloha.fields import HTMLField
@@ -138,6 +140,6 @@ Aloha.settings = {
 ```
 
 About Aloha Editor
-------
+------------------
 The [Aloha Editor](http://www.aloha-editor.org/) is a WYSIWYG that uses the
 HTML5 content-editable attribute of the browswer for the best editing experience.
