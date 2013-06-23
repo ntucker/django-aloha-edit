@@ -8,15 +8,19 @@ function listProperties(obj) {
    alert(propList);
 }
 
-Aloha.ready( function() {
+Aloha.ready(function() {
 	var $ = Aloha.jQuery;
-    $('.aloha-edit').aloha();
-    $('form').submit(function(){
-		$('.aloha-edit', this).each(function (index) {
-			var id = $(this).attr('data-id');
-			var content = Aloha.getEditableById('aloha-'+id).getContents();
-			$('#'+id).attr('value', content);
+	$.fn.iniForm = function() {
+		$('.aloha-edit', this).aloha();
+		$('form', this).submit(function() {
+			$('.aloha-edit', this).each(function(index) {
+				var id = $(this).attr('data-id');
+				var content = Aloha.getEditableById('aloha-' + id).getContents();
+				$('#' + id).attr('value', content);
+			});
+			//$.post(save_url, content, save_callback);
 		});
-		//$.post(save_url, content, save_callback);
-    });
+	}
+
+	$(document).iniForm();
 });
