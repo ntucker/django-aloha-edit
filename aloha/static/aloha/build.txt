@@ -17,8 +17,6 @@ lib/util/arrays.js
 lib/util/strings.js
 lib/vendor/pubsub/js/pubsub-unminified.js
 lib/util/maps.js
-lib/util/browser.js
-lib/util/dom2.js
 lib/util/html.js
 lib/aloha/engine.js
 lib/aloha/selection.js
@@ -28,6 +26,8 @@ lib/aloha/observable.js
 lib/aloha/registry.js
 lib/aloha/contenthandlermanager.js
 lib/util/trees.js
+lib/util/browser.js
+lib/util/dom2.js
 lib/util/misc.js
 lib/aloha/ephemera.js
 lib/aloha/copypaste.js
