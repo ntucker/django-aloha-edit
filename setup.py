@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='django-aloha-edit',
-      version='0.1.0',
+      version='0.1.1',
       description='Django Aloha Edit',
       author='Nathaniel Tucker',
       author_email='me@ntucker.me',
