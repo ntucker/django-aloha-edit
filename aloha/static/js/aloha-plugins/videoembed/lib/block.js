@@ -22,7 +22,33 @@ define([
 			postProcessFn();
 		}
 	});
+	var YoutubeBlock = block.AbstractBlock.extend({
+		title: 'YoutubeBlock',
+		getSchema: function() {
+			return {
+				'id': {
+					type: 'string',
+					label: 'ID'
+				},
+				'params': {
+					type: 'string',
+					label: 'Parmas'
+				}
+			}
+		},
+		init: function($element, postProcessFn) {
+			this.attr('id', $element.data('id'));
+			this.attr('params', $element.data('params'));
+			postProcessFn();
+		},
+		update: function($element, postProcessFn) {
+			$element.data('id', this.attr('id'));
+			$element.data('params', this.attr('params'));
+			postProcessFn();
+		}
+	});
 	return {
 		VideoBlock: VideoBlock,
+		YoutubeBlock: YoutubeBlock
 	};
 });

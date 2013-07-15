@@ -37,43 +37,50 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Handle the pasting. Try to detect content pasted from word and transform to clean html
 		 * @param content
 		 */
-		handleContent: function( content ) {
-			if ( typeof content === 'string' ){
-				var match = providers[0].matches(content);
-				if (match) {
-					var params = new Array();
-					if (match[5]) {
-						params.push("start="+((match[4]?(parseInt(match[4])*60):0) + parseInt(match[5])));
-					}
-					if (match[6]) {
-						params.push("end="+match[7]);
-					}
-					if (match[8]) {
-						params.push("list=" + match[9]);
-					}
-					if (params.length>0) {
-						params = "?" + params.join("&");
+		handleContent: function( content, options, editable ) {
+			switch (options.command) {
+			case 'insertHtml':
+				if ( typeof content === 'string' ){
+					var match = providers[0].matches(content);
+					if (match) {
+						var params = new Array();
+						if (match[5]) {
+							params.push("start="+((match[4]?(parseInt(match[4])*60):0) + parseInt(match[5])));
+						}
+						if (match[6]) {
+							params.push("end="+match[7]);
+						}
+						if (match[8]) {
+							params.push("list=" + match[9]);
+						}
+						if (params.length>0) {
+							params = "?" + params.join("&");
+						} else {
+							params = "";
+						}
+						
+						content = '<div class="youtube" data-id="'+match[1]+'" data-params="'+params+'"></div>';
 					} else {
-						params = "";
-					}
-					
-					content = '<iframe src="http://www.youtube.com/embed/'+match[1]+params+'" frameborder="0" allowfullscreen></iframe>';
-				} else {
-					match = providers[1].matches(content);
-					if (match) {						
-						content = '<iframe src="http://blip.tv/play/'+match[1]+'.x" frameborder="0" allowfullscreen></iframe>';
-					} else {
-						if (content.match(/(^|\s)((https?:\/\/)[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
-							return jQuery('<div><a href="'+content+'">' + content + '</a></div>').html();
+						match = providers[1].matches(content);
+						if (match) {						
+							content = '<iframe src="http://blip.tv/play/'+match[1]+'.x" frameborder="0" allowfullscreen></iframe>';
+						} else {
+							if (content.match(/(^|\s)((https?:\/\/)[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
+								return jQuery('<div><a href="'+content+'">' + content + '</a></div>').html();
+							}
 						}
 					}
+					content = jQuery( '<div>' + content + '</div>' );
+				} else if ( content instanceof jQuery ) {
+					content = jQuery( '<div>' ).append(content);
 				}
+				content.activateYoutube(false);
+				return content.html();
+			case 'getContents':
 				content = jQuery( '<div>' + content + '</div>' );
-			} else if ( content instanceof jQuery ) {
-				content = jQuery( '<div>' ).append(content);
+				$('.youtube', content).empty();
+				return content.html();
 			}
-
-			return content.html();
 		}
 	});
 	

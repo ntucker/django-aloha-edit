@@ -34,6 +34,7 @@ define([
 		init : function () {
 			var plugin = this;
 			BlockManager.registerBlockType('VideoBlock', bootstrapBlock.VideoBlock);
+			BlockManager.registerBlockType('YoutubeBlock', bootstrapBlock.YoutubeBlock);
 			ContentHandlerManager.register( 'videoembed', VideoEmbedContentHandler );
 			ContentHandlerManager.register( 'removebr', RemoveExtraBrContentHandler );
 
@@ -60,44 +61,68 @@ define([
 		bindInteractions: function () {
 			var plugin = this;
 			Aloha.bind( 'aloha-editable-created', function (event, editable) {
-				jQuery('iframe', editable.obj).wrap('<div />').parent().alohaBlock({'aloha-block-type': 'VideoBlock'});
+				jQuery(editable.obj).activateYoutube(false);
+				jQuery('.youtube', editable.obj).alohaBlock({'aloha-block-type': 'YoutubeBlock'});
 			});
 			Aloha.bind( 'aloha-smart-content-changed', function ( event, editable ) {
 				if ( Aloha.activeEditable ) {
-					jQuery('[contenteditable!="false"] > iframe', editable.obj).wrap('<div />').parent().alohaBlock({'aloha-block-type': 'VideoBlock'});
+					jQuery('[contenteditable!="false"] > .youtube:not(.aloha-block)', editable.obj).alohaBlock({'aloha-block-type': 'YoutubeBlock'});
 				}
 			});
 			Aloha.bind( 'aloha-editable-destroyed', function (event, editable) {
-				var iframe = jQuery('iframe', editable.obj);
-				iframe.parent().mahaloBlock();
-				iframe.unwrap();
+				var youtube = jQuery('.youtube', editable.obj);
+				youtube.mahaloBlock();
 			});
 			BlockManager.bind('block-activate', function (blocks) {
-				if (blocks[0].title == "VideoBlock") {
-					plugin._videoSrcField.element.find('input').val(blocks[0].attr('source'));
+				if (blocks[0].title == "YoutubeBlock") {
+					plugin._youtubeIdField.element.find('input').val(blocks[0].$element.data('id'));
+					plugin._youtubeParamField.element.find('input').val(blocks[0].$element.data('params'));
 				}
 			});
 		},
 		_addVideoUI: function() {
-			var scope = 'Aloha.Block.VideoBlock';
-			this._videoSrcField = Ui.adopt("videoSrc", Text, {
+			var scope = 'Aloha.Block.YoutubeBlock';
+			var plugin = this;
+			this._youtubeIdField = Ui.adopt("videoId", Text, {
 				scope: scope,
 				setValue: function(value) {
-					BlockManager._activeBlock.attr('source', value);
+					BlockManager._activeBlock.$element.data('id', value);
+					var thumbsrc = "http://i.ytimg.com/vi/" + BlockManager._activeBlock.$element.data('id') + "/hqdefault.jpg";
+					BlockManager._activeBlock.$element.css('background-image', "url('"+thumbsrc+"')");
 				},
 				init: function() {
 					this._super();
-					this.element.css('width', '500px');
-					this.element = UiUtil.wrapWithLabel("Embed URL", this.element);
+					this.element.css('width', '230px');
+					this.element = UiUtil.wrapWithLabel("Id", this.element);
 				},
 			});
-			
+			this._youtubeParamField = Ui.adopt("videoParams", Text, {
+				scope: scope,
+				setValue: function(value) {
+					BlockManager._activeBlock.$element.data('params', value);
+				},
+				init: function() {
+					this._super();
+					this.element.css('width', '240px');
+					this.element = UiUtil.wrapWithLabel("Parmas", this.element);
+				},
+			});
+			this._youtubeRemove = Ui.adopt("videoRemove", Button, {
+				tooltip: "remove video",
+				icon: 'aloha-img icon-trash',
+				scope: scope,
+				click : function () {
+					plugin.removeYoutube();
+				}
+			});			
 		},
 		createVideo: function() {
 			// Check if there is an active Editable and that it contains an element (= .obj)
 			if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
-				var video = jQuery('<div><iframe src="http://www.youtube.com/embed/" frameborder="0" allowfullscreen></iframe></div>');
-				video.alohaBlock({'aloha-block-type': 'VideoBlock'});
+				var video = jQuery('<div><div class="youtube" data-id="" data-params=""></div></div>');
+				video.activateYoutube(false);
+				video = video.children();
+				video.alohaBlock({'aloha-block-type': 'YoutubeBlock'});
 				BlockManager.getBlock(video).activate();
 
 				GENTICS.Utils.Dom.insertIntoDOM(
@@ -105,6 +130,17 @@ define([
 						Aloha.Selection.getRangeObject(),
 						Aloha.activeEditable.obj
 				);
+			}
+		},
+		
+		removeYoutube: function ( ) {
+			var youtube = BlockManager._activeBlock;
+
+			if ( youtube && youtube.title == 'YoutubeBlock' ) {
+				//deactivate block
+				youtube.unblock();
+				//delete element from DOM
+				youtube.$element.remove();
 			}
 		},
 	});
