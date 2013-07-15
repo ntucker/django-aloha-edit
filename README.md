@@ -40,6 +40,12 @@ This plugin provides video embedding capabilities. It currently supports both bl
 This plugin provides both a content handler (so you can copy/paste links) as well as UI elements in the Aloha bar to manipulate and add
 video embeds.
 
+For youtube videos, the embed include a special div that will reduce load on usage. You must include /static/js/youtube.js on both the
+edit page as well as the page that shows the content. This provides a jQuery function to activate the click functionality so the
+actual video will load when a user clicks it. Make sure to call this on page load of any page you are presenting your HTML content.
+
+e.g.) $(function() {$(body).activateYoutube();});
+
 ### Bootstrap UI
 
 This plugin provides manipulation of several [bootstrap](http://twitter.github.io/bootstrap/) elements including collapse (called spoiler here)
@@ -62,6 +68,45 @@ Aloha.settings = {
 			       'common/table','common/image','common/undo','common/abbr',
 			       'common/link','common/contenthandler','common/paste','common/block','common/characterpicker',
 			       'user/videoembed', 'user/bootstrapui'],
+		},
+		contentHandler: {
+			insertHtml: [ 'word', 'blockelement', 'generic', 'sanitize', 'videoembed', ],
+			initEditable: [ 'sanitize' ],
+			getContents: [ 'blockelement', 'basic', 'removebr', 'videoembed', 'sanitize', ],
+			sanitize: 'relaxed', // relaxed, restricted, basic,
+			allows: {
+				elements: 
+					['a', 'abbr', 'acronym', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del',
+					 'div', 'dl', 'dt', 'em', 'h2', 'h3', 'h4', 'h5', 'i', 'iframe', 'img', 'ins', 'li', 'ol', 'p',
+					 'pre', 'q', 'small', 'strong', 'sub', 'sup', 'table', 'td',
+					 'th', 'tr', 'u', 'ul'],
+
+					 attributes: {
+						 'a'         : ['href', 'rel', 'target', 'title', 'data-toggle', 'class'],
+						 'blockquote': ['cite'],
+						 'q'         : ['cite'],
+						 'img'       : ['src', 'alt', 'title', 'style'],
+						 'iframe'    : ['src', 'width', 'height', 'frameborder', 'allowfullscreen'],
+						 'div'       : ['class', 'id', 'style', 'data-id', 'data-params'],
+						 'span'      : ['class'],
+						 'p'         : ['style'],
+						 'table'     : ['class'],
+						 'td'        : ['colspan'],
+						 'th'        : ['colspan'],
+						 'ul'        : ['class'],
+						 'li'        : ['class'],
+						 'i'         : ['class'],
+						 'span'      : ['class'],
+					 },
+
+					 protocols: {
+						 'a'         : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']}, // Sanitize.RELATIVE
+						 'blockquote': {'cite': ['http', 'https', '__relative__']},
+						 'q'         : {'cite': ['http', 'https', '__relative__']},
+						 'img'       : {'src' : ['http', 'https', 'data', '__relative__']},
+						 'iframe'    : {'src' : ['http', 'https', '__relative__']}
+					 }
+			}
 		},
 		toolbar: {
 			tabs: [
@@ -127,6 +172,13 @@ Aloha.settings = {
 			      	 showOn: { scope: 'Aloha.Block.VideoBlock' },
 			      	 components: [
 			      	              [ "videoSrc",],
+			      	              ]
+			       },
+			       {
+			      	 label: "YouTube",
+			      	 showOn: { scope: 'Aloha.Block.YoutubeBlock' },
+			      	 components: [
+			      	              [ "videoId","videoParams","videoRemove"],
 			      	              ]
 			       },
 			       ]
