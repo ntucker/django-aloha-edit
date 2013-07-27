@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 import os.path
 
 def read(fname):
@@ -10,7 +10,7 @@ setup(name='django-aloha-edit',
       author='Nathaniel Tucker',
       author_email='me@ntucker.me',
       url='https://github.com/ntucker/django-aloha-edit',
-      packages=['aloha'],
+      packages=find_packages(),
       include_package_data=True,
       install_requires=['django>=1.4', 'bleach>=1.2.1', 'lxml', ],
       long_description=read('README.md'),
