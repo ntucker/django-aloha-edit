@@ -1,5 +1,8 @@
 (function( $ ) {
-	$.fn.activateYoutube = function(trigger=true) {
+	$.fn.activateYoutube = function(trigger) {
+		if (trigger === undefined) {
+			trigger = true;
+		}
 		$('.youtube', this).empty().each(function(index, element) {
 			$youtube = $(element);
 			var thumbsrc = "http://i.ytimg.com/vi/" + $youtube.data('id') + "/hqdefault.jpg";
