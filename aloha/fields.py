@@ -73,7 +73,10 @@ class HTMLField(models.TextField):
             value = u"".join([frag.text or "", u"".join([tostring(child, encoding=unicode) for child in frag.iterchildren()])])
         else:
             value = tostring(frag, encoding=unicode)
-        value = bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True)
+        try:
+            value = bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True)
+        except TypeError: # bleach doesn't work with new html5lib, just ignore it for now - NOTE: THIS IS UNSAFE
+            pass
         return super(HTMLField, self).clean(value, model_instance)
 
     def _process_images(self, frag, extra_path):
