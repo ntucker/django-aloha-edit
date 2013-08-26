@@ -72,7 +72,7 @@ Aloha.settings = {
 		contentHandler: {
 			insertHtml: [ 'word', 'blockelement', 'generic', 'sanitize', 'videoembed', ],
 			initEditable: [ 'sanitize' ],
-			getContents: [ 'blockelement', 'basic', 'removebr', 'videoembed', 'sanitize', ],
+			getContents: [ 'blockelement', 'basic', 'removebr', 'videoembed', 'spoiler', 'sanitize', ],
 			sanitize: 'relaxed', // relaxed, restricted, basic,
 			allows: {
 				elements: 

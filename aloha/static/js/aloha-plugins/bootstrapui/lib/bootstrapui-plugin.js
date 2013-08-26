@@ -8,7 +8,9 @@ define([
         'ui/text',
         'ui/utils',
         'block/blockmanager',
+        'aloha/contenthandlermanager',
         'bootstrapui/block',
+        'bootstrapui/spoilercontenthandler',
         'image/image-plugin',
         ], function (Aloha,
       		  Plugin,
@@ -19,7 +21,9 @@ define([
       		  Text,
       		  UiUtil,
       		  BlockManager,
+      		  ContentHandlerManager,
       		  bootstrapBlock,
+      		  SpoilerContentHandler,
       		  imagePlugin) {
 	'use strict';
 
@@ -33,6 +37,7 @@ define([
 			var plugin = this;
 			BlockManager.registerBlockType('ThumbnailBlock', bootstrapBlock.ThumbnailBlock);
 			BlockManager.registerBlockType('SpoilerBlock', bootstrapBlock.SpoilerBlock);
+			ContentHandlerManager.register( 'spoiler', SpoilerContentHandler );
 			var spoilerbutton = Ui.adopt("insertSpoilers", Button, {
 				tooltip: "spoiler",
 				scope: 'Aloha.continuoustext',
@@ -171,19 +176,19 @@ define([
 		bindInteractions: function () {
 			var plugin = this;
 			Aloha.bind( 'aloha-editable-created', function (event, editable) {
-				jQuery('.accordion-inner', editable.obj).addClass('aloha-editable');
-				jQuery('.accordion-group', editable.obj).alohaBlock({'aloha-block-type': 'SpoilerBlock'}).find('.collapse').collapse('show');
+				jQuery('.panel-body', editable.obj).addClass('aloha-editable');
+				jQuery('.panel', editable.obj).alohaBlock({'aloha-block-type': 'SpoilerBlock'}).find('.panel-collapse').collapse('show');
 
-				jQuery('.thumbnail', editable.obj).alohaBlock({'aloha-block-type': 'ThumbnailBlock'});
-				jQuery('.thumbnail img', editable.obj).addClass('aloha-ui'); //this prevents the image plugin from activating
+				jQuery('.img-thumbnail', editable.obj).alohaBlock({'aloha-block-type': 'ThumbnailBlock'});
+				jQuery('.img-thumbnail img', editable.obj).addClass('aloha-ui'); //this prevents the image plugin from activating
 			});
 			Aloha.bind( 'aloha-editable-destroyed', function (event, editable) {
-				jQuery('.accordion-inner', editable.obj).mahalo();
-				var spoilers = jQuery('.accordion-group', editable.obj);
-				jQuery('.collapse', spoilers).collapse('hide');
+				jQuery('.panel-body', editable.obj).mahalo();
+				var spoilers = jQuery('.panel', editable.obj);
+				jQuery('.panel-collapse', spoilers).collapse('hide');
 				spoilers.mahaloBlock();
 
-				jQuery('.thumbnail', editable.obj).mahaloBlock();
+				jQuery('.img-thumbnail', editable.obj).mahaloBlock();
 			});
 			BlockManager.bind('block-activate', function (blocks) {
 				if (blocks[0].title == "ThumbnailBlock") {
@@ -201,7 +206,7 @@ define([
 			if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 				var id = GENTICS.Utils.guid();
 				var range = Aloha.Selection.getRangeObject();
-				var spoiler = jQuery('<div class="accordion-group"><div class="accordion-body collapse" id="'+id+'" style=""><div class="accordion-inner aloha-editable"></div></div></div>');
+				var spoiler = jQuery('<div class="panel panel-default"><div class="panel-collapse collapse" id="'+id+'" style=""><div class="panel-body aloha-editable"></div></div></div>');
 
 				if ( range.isCollapsed() ) {
 					GENTICS.Utils.Dom.insertIntoDOM(
@@ -213,9 +218,9 @@ define([
 					this.wrapMarkup( range, spoiler, true );
 					spoiler = jQuery("#"+id).parent();
 				}
-				var spoilerHeader = jQuery('<div class="accordion-heading"> \
-						<a class="accordion-toggle" data-toggle="collapse" href="#'+id+'" rel="nofollow" target="_blank" title="Show Spoiler">Spoiler</a> \
-						</div>');
+				var spoilerHeader = jQuery('<div class="panel-heading"><h4 class="panel-title"> \
+						<a class="accordion-toggle" data-toggle="collapse" href="#'+id+'" rel="nofollow" title="Show Spoiler">Spoiler</a> \
+						</h4></div>');
 				spoiler.prepend(spoilerHeader);
 				
 				spoiler.alohaBlock({'aloha-block-type': 'SpoilerBlock'});
@@ -277,15 +282,15 @@ define([
 				//deactivate block
 				spoiler.unblock();
 				//remove header
-				$('.accordion-heading', spoiler.$element).first().remove();
+				$('.panel-heading', spoiler.$element).first().remove();
 				//remove inner layers
-				$('.accordion-inner', spoiler.$element).first().contents().unwrap().unwrap().unwrap();
+				$('.panel-body', spoiler.$element).first().contents().unwrap().unwrap().unwrap();
 			}
 		},
 		
 		wrapThumbnail: function() {
 			if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
-				var thumbnail = jQuery('<div class="thumbnail"></div>');
+				var thumbnail = jQuery('<div class="img-thumbnail"></div>');
 				imagePlugin.endResize();
 				
 				var $img = imagePlugin.imageObj;
@@ -302,7 +307,7 @@ define([
 		createThumbnail: function() { //pull-left, pull-right
 
 			if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
-				var thumbnail = jQuery('<div class="thumbnail"><img src="" class="aloha-ui" /><div class="caption">Caption</div></div>');
+				var thumbnail = jQuery('<div class="img-thumbnail"><img src="" class="aloha-ui" /><div class="caption">Caption</div></div>');
 				thumbnail.alohaBlock({'aloha-block-type': 'ThumbnailBlock'});
 				BlockManager.getBlock(thumbnail).activate();
 				var range = Aloha.Selection.getRangeObject();
