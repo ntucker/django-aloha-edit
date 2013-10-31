@@ -41,7 +41,7 @@ define([
 			var spoilerbutton = Ui.adopt("insertSpoilers", Button, {
 				tooltip: "spoiler",
 				scope: 'Aloha.continuoustext',
-				icon: 'aloha-icon icon-warning-sign',
+				icon: 'aloha-icon fa fa-exclamation-triangle',
 				click: function(){
 					plugin.createSpoiler();
 				}
@@ -49,7 +49,7 @@ define([
 			var spoilerbutton = Ui.adopt("formatSpoilers", Button, {
 				tooltip: "spoiler",
 				scope: 'Aloha.continuoustext',
-				icon: 'aloha-icon icon-warning-sign',
+				icon: 'aloha-icon fa fa-exclamation-triangle',
 				click: function(){
 					plugin.createSpoiler();
 				}
@@ -57,7 +57,7 @@ define([
 			var thumbnailbutton = Ui.adopt("insertThumbnail", Button, {
 				tooltip: "thumbnail",
 				scope: 'Aloha.continuoustext',
-				icon: 'aloha-icon icon-picture',
+				icon: 'aloha-icon fa fa-picture-o',
 				click: function(){
 					plugin.createThumbnail();
 				}
@@ -65,7 +65,7 @@ define([
 			var thumbnailbutton = Ui.adopt("formatThumbnail", Button, {
 				tooltip: "thumbnail",
 				scope: 'Aloha.continuoustext',
-				icon: 'aloha-icon icon-picture',
+				icon: 'aloha-icon fa fa-picture-o',
 				click: function(){
 					plugin.createThumbnail();
 				}
@@ -73,7 +73,7 @@ define([
 			var thumbnailbutton = Ui.adopt("wrapThumbnail", Button, {
 				tooltip: "thumbnail",
 				scope: 'image',
-				icon: 'aloha-icon icon-picture',
+				icon: 'aloha-icon fa fa-picture-o',
 				click: function(){
 					plugin.wrapThumbnail();
 				}
@@ -102,7 +102,7 @@ define([
 			});
 			this._spoilerRemove = Ui.adopt("spoilerRemove", Button, {
 				tooltip: "remove spoiler wrapping",
-				icon: 'aloha-img icon-minus',
+				icon: 'aloha-img fa fa-minus',
 				scope: scope,
 				click : function () {
 					plugin.removeSpoiler();
@@ -139,7 +139,7 @@ define([
 			});
 			this._thumbnailRemove = Ui.adopt("thumbnailRemove", Button, {
 				tooltip: "remove thumbnail wrapping",
-				icon: 'aloha-img icon-minus',
+				icon: 'aloha-img fa fa-minus',
 				scope: scope,
 				click : function () {
 					plugin.removeThumbnail();
@@ -147,7 +147,7 @@ define([
 			});
 			this._thumbnailAlignLeftButton = Ui.adopt("thumbnailAlignLeft", Button, {
 				tooltip: "align left",
-				icon: 'aloha-img icon-align-left',
+				icon: 'aloha-img fa fa-align-left',
 				scope: scope,
 				click : function () {
 					BlockManager._activeBlock.attr('position', 'left');
@@ -156,7 +156,7 @@ define([
 
 			this._thumbnailAlignRightButton = Ui.adopt("thumbnailAlignRight", Button, {
 				tooltip: "align right",
-				icon: 'aloha-img icon-align-right',
+				icon: 'aloha-img fa fa-align-right',
 				scope: scope,
 				click : function () {
 					BlockManager._activeBlock.attr('position', 'right');
@@ -165,7 +165,7 @@ define([
 
 			this._thumbnailAlignNoneButton = Ui.adopt("thumbnailAlignNone", Button, {
 				tooltip: "align none",
-				icon: 'aloha-img icon-align-justify',
+				icon: 'aloha-img fa fa-align-justify',
 				scope: scope,
 				click : function () {
 					BlockManager._activeBlock.attr('position', '');

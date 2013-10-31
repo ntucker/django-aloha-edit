@@ -203,28 +203,28 @@ body {
 .container:after {
   clear: both;
 }
-.container-fluid {
+.container {
   position: relative;
   min-width: 940px;
   padding-left: 20px;
   padding-right: 20px;
   zoom: 1;
 }
-.container-fluid:before, .container-fluid:after {
+.container:before, .container:after {
   display: table;
   content: "";
   zoom: 1;
 }
-.container-fluid:after {
+.container:after {
   clear: both;
 }
-.container-fluid > .sidebar {
+.container > .sidebar {
   position: absolute;
   top: 0;
   left: 20px;
   width: 220px;
 }
-.container-fluid > .content {
+.container > .content {
   margin-left: 240px;
 }
 a {

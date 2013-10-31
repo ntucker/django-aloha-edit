@@ -41,7 +41,7 @@ define([
 			var videobutton = Ui.adopt("addVideo", Button, {
 				tooltip: "video",
 				scope: 'Aloha.continuoustext',
-				icon: 'aloha-icon icon-facetime-video',
+				icon: 'aloha-icon fa fa-video-camera',
 				click: function(){
 					plugin.createVideo();
 				}
@@ -49,7 +49,7 @@ define([
 			var videobutton = Ui.adopt("insertVideo", Button, {
 				tooltip: "video",
 				scope: 'Aloha.continuoustext',
-				icon: 'aloha-icon icon-facetime-video',
+				icon: 'aloha-icon fa fa-video-camera',
 				click: function(){
 					plugin.createVideo();
 				}
@@ -109,7 +109,7 @@ define([
 			});
 			this._youtubeRemove = Ui.adopt("videoRemove", Button, {
 				tooltip: "remove video",
-				icon: 'aloha-img icon-trash',
+				icon: 'aloha-img fa fa-trash-o',
 				scope: scope,
 				click : function () {
 					plugin.removeYoutube();
