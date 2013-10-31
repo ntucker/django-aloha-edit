@@ -191,6 +191,25 @@ Aloha.settings = {
 
 ```
 
+Using Font Awesome Icons for the added plugins
+----------------------------------------------
+
+Make sure to include the following CSS to make the icons display properly.
+
+```
+.@{fa-css-prefix} {
+  font-family: FontAwesome !important;
+}
+
+.aloha .ui-icon {
+  &.@{fa-css-prefix} {
+    text-indent:0;
+    background-image: none !important;
+  } 
+}
+
+```
+
 About Aloha Editor
 ------------------
 The [Aloha Editor](http://www.aloha-editor.org/) is a WYSIWYG that uses the
