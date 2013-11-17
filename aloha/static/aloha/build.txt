@@ -108,6 +108,7 @@ i18n!characterpicker/nls/i18n
 plugins/common/characterpicker/lib/characterpicker-plugin.js
 plugins/common/commands/lib/inserthtml.js
 plugins/common/commands/lib/commands-plugin.js
+plugins/common/block/lib/block-utils.js
 plugins/common/block/lib/blockmanager.js
 plugins/common/block/lib/editormanager.js
 plugins/common/block/lib/sidebarattributeeditor.js
@@ -127,6 +128,7 @@ plugins/common/horizontalruler/nls/i18n.js
 i18n!horizontalruler/nls/i18n
 plugins/common/horizontalruler/lib/horizontalruler-plugin.js
 plugins/common/paste/lib/paste-plugin.js
+plugins/common/autoparagraph/lib/autoparagraph-plugin.js
 plugins/extra/toc/nls/i18n.js
 i18n!toc/nls/i18n
 plugins/extra/toc/lib/toc-plugin.js
