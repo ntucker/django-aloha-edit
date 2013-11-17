@@ -7,7 +7,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='django-aloha-edit',
-      version='0.3.1',
+      version='0.3.2',
       description='Django Aloha Edit',
       author='Nathaniel Tucker',
       author_email='me@ntucker.me',
