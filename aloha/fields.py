@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import base64
 import re
 import posixpath
@@ -11,6 +13,7 @@ from lxml.html import tostring
 
 from django.conf import settings
 from django.db import models
+from django.utils import six
 from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -22,12 +25,10 @@ _RE_PROTOCOL = re.compile(r"(?P<protocol>[^:]+):(?P<mime>[^;]+);(?P<encoding>[^,
 logger = logging.getLogger(__name__)
 
 
-class HTMLField(models.TextField):
+class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
     """This stores HTML content to be displayed raw to the user.
     The content is cleaned using bleach to restrict the set of HTML used.
     The Aloha Editor widget is used for form editing."""
-    __metaclass__ = models.SubfieldBase
-
     def __init__(self, tags=None, attributes=None, styles=None, classes=None, iframe_origins=None, *args, **kwargs):
         self.tags = tags
         self.attributes = attributes
@@ -70,7 +71,7 @@ class HTMLField(models.TextField):
         if self.classes:  # if you don't specify any, it is assumed allow-all
             frag = self._filter_classes(frag)
         if frag.tag == "div":
-            value = u"".join([frag.text or "", u"".join([tostring(child, encoding=unicode) for child in frag.iterchildren()])])
+            value = "".join([frag.text or "", "".join([tostring(child, encoding=unicode) for child in frag.iterchildren()])])
         else:
             value = tostring(frag, encoding=unicode)
         try:
@@ -114,14 +115,14 @@ class HTMLField(models.TextField):
         return frag
 
     def _verify_id_namespace(self, frag, extra_namespace):
-        namespace = u"-".join(('aloha', extra_namespace))+'-'
+        namespace = "-".join(('aloha', extra_namespace))+'-'
         for elem in frag.cssselect('[id]'):
             if not elem.attrib['id'].startswith(namespace):
                 elem.attrib['id'] = namespace + elem.attrib['id']
         return frag
 
     def _verify_link_namespace(self, frag, extra_namespace):
-        namespace = u"-".join(('#aloha', extra_namespace))+'-'
+        namespace = "-".join(('#aloha', extra_namespace))+'-'
         for a in frag.cssselect('a.accordion-toggle'):
             href = a.attrib.get('href')
             if href and href.startswith('#') and not href.startswith(namespace):

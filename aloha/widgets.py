@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django import forms
 from django.utils.safestring import mark_safe
 from django.forms.util import flatatt
@@ -15,7 +17,7 @@ class AlohaWidget(forms.Widget):
         if value is None:
             value = ''
         final_attrs = self.build_attrs(attrs, name=name)
-        return mark_safe(u'<div style="margin:0;padding:0;" class="aloha-edit span8" data-id="%s" id="aloha-%s">%s</div><input type="hidden"%s />'
+        return mark_safe('<div style="margin:0;padding:0;" class="aloha-edit span8" data-id="%s" id="aloha-%s">%s</div><input type="hidden"%s />'
                          % (final_attrs['id'], final_attrs['id'], force_unicode(value), flatatt(final_attrs)))
 
     class Media:
