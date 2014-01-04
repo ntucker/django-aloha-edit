@@ -14,7 +14,7 @@ setup(name='django-aloha-edit',
       url='https://github.com/ntucker/django-aloha-edit',
       packages=find_packages(),
       include_package_data=True,
-      install_requires=['django>=1.4', 'bleach>=1.2.1', 'lxml', ],
+      install_requires=['django>=1.5', 'bleach>=1.2.1', 'lxml', ],
       long_description=read('README.md'),
       license="BSD",
       classifiers=[

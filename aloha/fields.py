@@ -14,6 +14,7 @@ from lxml.html import tostring
 from django.conf import settings
 from django.db import models
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -61,7 +62,7 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
 
     def clean(self, value, model_instance):
         frag = html.fromstring(value)
-        instance_slug = slugify(unicode(getattr(model_instance, 'title', model_instance)))
+        instance_slug = slugify(force_text(getattr(model_instance, 'title', model_instance)))
         frag = self._process_images(frag, instance_slug)
         frag = self._restrict_iframe_host(frag)
         frag = self._process_links(frag)
