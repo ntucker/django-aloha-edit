@@ -1,5 +1,10 @@
 # Aloha Edit Changelog
 
+## 0.3.3 - 2014/01/05
+
+- Fix bug to make aloha function in a single page javascript application
+- Python 3 compatbility fixes
+
 ## 0.3.2 - 2013/11/17
 
 - Python 3 compatbility
