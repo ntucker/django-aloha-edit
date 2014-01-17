@@ -1,5 +1,10 @@
 # Aloha Edit Changelog
 
+## 0.4.0 - 2014/01/16
+
+- Move all aloha files out of project - you must provide those yourself
+- Youtube jquery plugin is provided as require.js define now
+
 ## 0.3.3 - 2014/01/05
 
 - Fix bug to make aloha function in a single page javascript application
