@@ -1,26 +1,27 @@
 from __future__ import unicode_literals
 
 import base64
-import re
-import posixpath
-import os.path
-import logging
-import urlparse
-
-import bleach
-import lxml.html as html
-from lxml.html import tostring
-
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.template.defaultfilters import slugify
+import logging
+import os.path
+import posixpath
+import re
+import urlparse
+
+import bleach
+from lxml.html import tostring
+
+import lxml.html as html
 
 from .widgets import AlohaWidget
+
 
 _RE_PROTOCOL = re.compile(r"(?P<protocol>[^:]+):(?P<mime>[^;]+);(?P<encoding>[^,]+),(?P<data>.*)")
 logger = logging.getLogger(__name__)
@@ -75,10 +76,7 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
             value = "".join([frag.text or "", "".join([tostring(child, encoding=unicode) for child in frag.iterchildren()])])
         else:
             value = tostring(frag, encoding=unicode)
-        try:
-            value = bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True)
-        except TypeError: # bleach doesn't work with new html5lib, just ignore it for now - NOTE: THIS IS UNSAFE
-            pass
+        value = bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True)
         return super(HTMLField, self).clean(value, model_instance)
 
     def _process_images(self, frag, extra_path):
