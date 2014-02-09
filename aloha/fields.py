@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import base64
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import models
@@ -104,11 +105,11 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
         return frag
 
     def _process_links(self, frag):
+        site = Site.objects.get_current()
         for a in frag.cssselect('a'):
-            #TODO: use Site to check same origin instead of hardcoded
             if 'href' in a.attrib and not a.attrib['href'].startswith("/") \
                     and not a.attrib['href'].startswith(".") \
-                    and urlparse.urlparse(a.attrib['href']).netloc.split('.')[-2:] != ['day9', 'tv']:
+                    and urlparse.urlparse(a.attrib['href']).netloc.split('.')[-2:] != site.domain.split('.')[-2:]:
                 a.attrib['rel'] = "nofollow"
                 a.attrib['target'] = "_blank"
         return frag
