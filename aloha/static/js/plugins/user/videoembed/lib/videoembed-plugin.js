@@ -87,7 +87,7 @@ define([
 				scope: scope,
 				setValue: function(value) {
 					BlockManager._activeBlock.$element.data('id', value);
-					var thumbsrc = "http://i.ytimg.com/vi/" + BlockManager._activeBlock.$element.data('id') + "/hqdefault.jpg";
+					var thumbsrc = "//i.ytimg.com/vi/" + BlockManager._activeBlock.$element.data('id') + "/hqdefault.jpg";
 					BlockManager._activeBlock.$element.css('background-image', "url('"+thumbsrc+"')");
 				},
 				init: function() {
