@@ -11,7 +11,7 @@ define([
 			$youtube = $(element);
 			var thumbsrc = "//i.ytimg.com/vi/" + $youtube.data('id') + "/hqdefault.jpg";
 			$youtube.css('background-image', "url('"+thumbsrc+"')");
-			$youtube.append($('<span class="fa-stack play"><i class="fa fa-circle fa-stack-1x"></i><i class="fa fa-youtube-play fa-stack-1x"></i></span>'));
+			$youtube.append($('<span class="fa-stack play"><i class="fa fa-circle fa-stack-1x"></i> <i class="fa fa-youtube-play fa-stack-1x"></i></span>'));
 			var width = $youtube.outerWidth();
 			var height = width * 0.5625;
 			$youtube.height(height);
