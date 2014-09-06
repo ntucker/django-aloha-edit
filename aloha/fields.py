@@ -63,6 +63,8 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
         return mark_safe(value)
 
     def clean(self, value, model_instance):
+        if not value:
+            return super(HTMLField, self).clean(value, model_instance)
         frag = html.fromstring(value)
         instance_slug = slugify(force_text(getattr(model_instance, 'title', model_instance)))
         frag = self._process_images(frag, instance_slug)
