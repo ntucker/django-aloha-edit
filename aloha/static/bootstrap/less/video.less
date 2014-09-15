@@ -1,0 +1,30 @@
+.youtube {
+  .embed-responsive();
+  .embed-responsive .embed-responsive-16by9();
+  background-color:#000;
+  position:relative;
+  cursor:pointer;
+  background-repeat: none;
+  background-position:0 center;
+  background-size:100% auto;
+  text-shadow: none;
+  .play {
+    text-align:center;
+    color:black;
+    .opacity(70);
+    font-size:90px;
+    left:50%;
+    margin-left:-90px;
+    margin-top:-90px;
+    position:absolute;
+    top:50%;
+    .fa-circle {font-size:60px; color:white;}
+  }
+  &:hover .play {
+    color:red;
+  }
+  [class^="fa-"]:before,
+  [class*=" fa-"]:before {
+    cursor:pointer;
+  }
+}

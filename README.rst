@@ -106,10 +106,17 @@ actual video will load when a user clicks it. Make sure to call this on page loa
 
 e.g.) ``$(function() {$(body).activateYoutube();});``
 
+Styling
+*******
+
+It is important that you provide proper styling to this. ``{{STATIC_URL}}/bootstrap/less/video.less`` has been included
+for your use in the case that you use Bootstrap_ to style; though it can easily
+be used in any LessCSS_ project as well provided the ``.embed-responsive`` mixin is included.
+
 Bootstrap UI
 ~~~~~~~~~~~~
 
-This plugin provides manipulation of several [bootstrap](http://twitter.github.io/bootstrap/) elements including collapse (called spoiler here)
+This plugin provides manipulation of several Bootstrap_ elements including collapse (called spoiler here)
 and thumbnails. Make sure you include the appropriate css and javascript for those parts of bootstrap or they will not work.
 
 Usage
@@ -233,7 +240,7 @@ You must also add the UI elements to the UI configuration. Below is a sample con
    					label : "Thumbnail",
    					showOn : {
    						scope : 'Aloha.Block.ThumbnailBlock'
-   					},
+   					},]
    					components : [
    							[ "thumbnailSrc", "thumbnailCaption", "thumbnailRemove", ],
    							[ "\n", "thumbnailAlignLeft", "thumbnailAlignRight",
@@ -290,5 +297,9 @@ py3k compat by default.
 
 About Aloha Editor
 ------------------
-The [Aloha Editor](http://www.aloha-editor.org/) is a WYSIWYG that uses the
+The `Aloha Editor`_ is a WYSIWYG that uses the
 HTML5 content-editable attribute of the browswer for the best editing experience.
+
+.. _Bootstrap: http://twitter.github.io/bootstrap/
+.. _Aloha Editor: http://www.aloha-editor.org/
+.. _LessCSS: http://lesscss.org/
