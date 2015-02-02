@@ -48,11 +48,20 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
             self.classes = getattr(settings, 'ALLOWED_CLASSES', [])
         self.classes = set(self.classes)
         if iframe_origins is None:
-            if hasattr(settings, 'IFRAME_ORIGINS'):
-                self.iframe_origins = settings.IFRAME_ORIGINS
-            else:
-                self.iframe_origins = []
+            self.iframe_origins = getattr(settings, 'IFRAME_ORIGINS', [])
         return super(HTMLField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(HTMLField, self).deconstruct()
+        for k in ['tags', 'attributes', 'styles', 'classes']:
+            v = getattr(self, k)
+            if not isinstance(v, list):
+                v = list(v)
+            if v != getattr(settings, 'ALLOWED_' + k.upper(), []):
+                kwargs[k] = getattr(self, k)
+        if self.iframe_origins != getattr(settings, 'IFRAME_ORIGINS', []):
+            kwargs['iframe_origins'] = self.iframe_origins
+        return name, path, args, kwargs
 
     def formfield(self, **kwargs):
         defaults = {'widget': AlohaWidget()}
