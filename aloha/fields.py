@@ -92,7 +92,7 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
         return super(HTMLField, self).clean(value, model_instance)
 
     def _process_images(self, frag, extra_path):
-        for img in filter(lambda img: img.attrib.get('src') and img.attrib['src'].startswith("data:"), frag.cssselect('img')):
+        for i, img in enumerate(filter(lambda img: img.attrib.get('src') and img.attrib['src'].startswith("data:"), frag.cssselect('img'))):
             protocol_matcher = _RE_PROTOCOL.match(img.attrib['src'])
             if not protocol_matcher:
                 logger.debug("Data protocol found, but was malformed, {0}".format(img.attrib['src']))
@@ -100,7 +100,7 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
             base, extension = protocol_matcher.group("mime").split("/", 1)
             if base != "image":
                 continue
-            img_name = img.attrib.get('title', base)
+            img_name = img.attrib.get('title', base) + str(i)
             name = default_storage.save(os.path.join('images', 'aloha-uploads', extra_path, ".".join((img_name, extension))),
                                         ContentFile(base64.b64decode(protocol_matcher.group("data"))))
             img.attrib['src'] = posixpath.join(settings.MEDIA_URL, name)
