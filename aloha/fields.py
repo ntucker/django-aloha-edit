@@ -28,60 +28,30 @@ _RE_PROTOCOL = re.compile(r"(?P<protocol>[^:]+):(?P<mime>[^;]+);(?P<encoding>[^,
 logger = logging.getLogger(__name__)
 
 
-class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
-    """This stores HTML content to be displayed raw to the user.
-    The content is cleaned using bleach to restrict the set of HTML used.
-    The Aloha Editor widget is used for form editing."""
-    def __init__(self, tags=None, attributes=None, styles=None, classes=None, iframe_origins=None, *args, **kwargs):
-        self.tags = tags
-        self.attributes = attributes
-        self.styles = styles
-        self.classes = classes
-        self.iframe_origins = iframe_origins
-        if tags is None:
+class HTMLSanitizerMixin(object):
+    def __init__(self, *args, **kwargs):
+        for k in ['tags', 'attributes', 'styles', 'classes', 'iframe_origins']:
+            setattr(self, k, kwargs.pop(k, None))
+        if self.tags is None:
             self.tags = getattr(settings, 'ALLOWED_TAGS', [])
-        if attributes is None:
+        if self.attributes is None:
             self.attributes = getattr(settings, 'ALLOWED_ATTRIBUTES', {})
-        if styles is None:
+        if self.styles is None:
             self.styles = getattr(settings, 'ALLOWED_STYLES', [])
-        if classes is None:
+        if self.classes is None:
             self.classes = getattr(settings, 'ALLOWED_CLASSES', [])
         self.classes = set(self.classes)
-        if iframe_origins is None:
+        if self.iframe_origins is None:
             self.iframe_origins = getattr(settings, 'IFRAME_ORIGINS', [])
-        return super(HTMLField, self).__init__(*args, **kwargs)
+        super(HTMLSanitizerMixin, self).__init__(*args, **kwargs)
 
-    def deconstruct(self):
-        name, path, args, kwargs = super(HTMLField, self).deconstruct()
-        for k in ['tags', 'attributes', 'styles', 'classes']:
-            v = getattr(self, k)
-            if not isinstance(v, list):
-                v = list(v)
-            if v != getattr(settings, 'ALLOWED_' + k.upper(), []):
-                kwargs[k] = getattr(self, k)
-        if self.iframe_origins != getattr(settings, 'IFRAME_ORIGINS', []):
-            kwargs['iframe_origins'] = self.iframe_origins
-        return name, path, args, kwargs
-
-    def formfield(self, **kwargs):
-        defaults = {'widget': AlohaWidget()}
-        defaults.update(kwargs)
-        return super(HTMLField, self).formfield(**defaults)
-
-    def to_python(self, value):
-        return mark_safe(value)
-
-    def clean(self, value, model_instance):
-        if not value:
-            return super(HTMLField, self).clean(value, model_instance)
+    def sanitize(self, value, instance_slug):
         frag = html.fromstring(value)
-        instance_slug = slugify(force_text(getattr(model_instance, 'title', model_instance)))
         frag = self._process_images(frag, instance_slug)
         frag = self._restrict_iframe_host(frag)
         frag = self._process_links(frag)
         frag = self._verify_id_namespace(frag, instance_slug)
         frag = self._verify_link_namespace(frag, instance_slug)
-        #frag = self._remove_aloha_br(frag)
         if self.classes:  # if you don't specify any, it is assumed allow-all
             frag = self._filter_classes(frag)
         if frag.tag == "div":
@@ -89,7 +59,7 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
         else:
             value = tostring(frag, encoding=unicode)
         value = bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True)
-        return super(HTMLField, self).clean(value, model_instance)
+        return value
 
     def _process_images(self, frag, extra_path):
         for i, img in enumerate(filter(lambda img: img.attrib.get('src') and img.attrib['src'].startswith("data:"), frag.cssselect('img'))):
@@ -153,6 +123,56 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, models.TextField)):
             else:
                 elem.getparent().remove(elem)
         return frag
+
+
+class HTMLField(six.with_metaclass(models.SubfieldBase, HTMLSanitizerMixin, models.TextField)):
+    """This stores HTML content to be displayed raw to the user.
+    The content is cleaned using bleach to restrict the set of HTML used.
+    The Aloha Editor widget is used for form editing."""
+    def deconstruct(self):
+        name, path, args, kwargs = super(HTMLField, self).deconstruct()
+        for k in ['tags', 'attributes', 'styles', 'classes']:
+            v = getattr(self, k)
+            if not isinstance(v, list):
+                v = list(v)
+            if v != getattr(settings, 'ALLOWED_' + k.upper(), []):
+                kwargs[k] = getattr(self, k)
+        if self.iframe_origins != getattr(settings, 'IFRAME_ORIGINS', []):
+            kwargs['iframe_origins'] = self.iframe_origins
+        return name, path, args, kwargs
+
+    def formfield(self, **kwargs):
+        defaults = {'widget': AlohaWidget()}
+        defaults.update(kwargs)
+        return super(HTMLField, self).formfield(**defaults)
+
+    def to_python(self, value):
+        return mark_safe(value)
+
+    def clean(self, value, model_instance):
+        if not value:
+            return super(HTMLField, self).clean(value, model_instance)
+
+        instance_slug = slugify(force_text(getattr(model_instance, 'title', model_instance)))
+        value = self.sanitize(value, instance_slug)
+
+        return super(HTMLField, self).clean(value, model_instance)
+
+
+try:
+    from rest_framework import serializers
+    class HTMLSerializerField(HTMLSanitizerMixin, serializers.CharField):
+        def to_internal_value(self, data):
+            data = super(HTMLSerializerField, self).to_internal_value(data)
+            if not data:
+                return data
+
+            instance_slug = slugify(force_text(self.parent.initial_data['title']))
+            data = self.sanitize(data, instance_slug)
+
+            return data
+except ImportError:
+    pass
 
 try:
     from south.modelsinspector import add_introspection_rules
