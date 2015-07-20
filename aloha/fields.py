@@ -10,6 +10,7 @@ from django.template.defaultfilters import slugify
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
+from django.shortcuts import get_object_or_404
 import logging
 import os.path
 import posixpath
@@ -29,8 +30,9 @@ logger = logging.getLogger(__name__)
 
 
 class HTMLSanitizerMixin(object):
+    KWARG = ['tags', 'attributes', 'styles', 'classes', 'iframe_origins', 'source_field']
     def __init__(self, *args, **kwargs):
-        for k in ['tags', 'attributes', 'styles', 'classes', 'iframe_origins']:
+        for k in self.KWARG:
             setattr(self, k, kwargs.pop(k, None))
         if self.tags is None:
             self.tags = getattr(settings, 'ALLOWED_TAGS', [])
@@ -132,13 +134,17 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, HTMLSanitizerMixin, mode
     def deconstruct(self):
         name, path, args, kwargs = super(HTMLField, self).deconstruct()
         for k in ['tags', 'attributes', 'styles', 'classes']:
-            v = getattr(self, k)
-            if not isinstance(v, list):
-                v = list(v)
-            if v != getattr(settings, 'ALLOWED_' + k.upper(), []):
+            v, s = getattr(self, k), getattr(settings, 'ALLOWED_' + k.upper(), [])
+            if isinstance(v, list):
+                v = set(v)
+            if isinstance(s, list):
+                s = set(s)
+            if v != s:
                 kwargs[k] = getattr(self, k)
         if self.iframe_origins != getattr(settings, 'IFRAME_ORIGINS', []):
             kwargs['iframe_origins'] = self.iframe_origins
+        if self.source_field:
+            kwargs['source_field'] = self.source_field
         return name, path, args, kwargs
 
     def formfield(self, **kwargs):
@@ -153,7 +159,11 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, HTMLSanitizerMixin, mode
         if not value:
             return super(HTMLField, self).clean(value, model_instance)
 
-        instance_slug = slugify(force_text(getattr(model_instance, 'title', model_instance)))
+        if self.source_field:
+            source_instance = getattr(model_instance, self.source_field)
+        else:
+            source_instance = model_instance
+        instance_slug = slugify(force_text(getattr(source_instance, 'title', model_instance)))
         value = self.sanitize(value, instance_slug)
 
         return super(HTMLField, self).clean(value, model_instance)
@@ -167,7 +177,14 @@ try:
             if not data:
                 return data
 
-            instance_slug = slugify(force_text(self.parent.initial_data['title']))
+            if self.source_field:
+                source_article = self.parent.fields[self.source_field].to_internal_value(self.parent.initial_data[self.source_field])
+                instance_slug = slugify(force_text(source_article.title))
+            elif 'title' in self.parent.initial_data:
+                instance_slug = slugify(force_text(self.parent.initial_data['title']))
+            else:
+                logger.error('Using HTMLField with no title is not currently supported')
+                #instance_slug = TODO: base on ID?
             data = self.sanitize(data, instance_slug)
 
             return data
