@@ -178,7 +178,10 @@ try:
                 return data
 
             if self.source_field:
-                source_article = self.parent.fields[self.source_field].to_internal_value(self.parent.initial_data[self.source_field])
+                if self.parent.instance:
+                    source_article = getattr(self.parent.instance, self.source_field)
+                else:
+                    source_article = self.parent.fields[self.source_field].to_internal_value(self.parent.initial_data[self.source_field])
                 instance_slug = slugify(force_text(source_article.title))
             elif 'title' in self.parent.initial_data:
                 instance_slug = slugify(force_text(self.parent.initial_data['title']))
