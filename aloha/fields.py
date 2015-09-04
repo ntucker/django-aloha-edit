@@ -48,19 +48,19 @@ class HTMLSanitizerMixin(object):
         super(HTMLSanitizerMixin, self).__init__(*args, **kwargs)
 
     def sanitize(self, value, instance_slug):
-        frag = html.fromstring(value)
+        frag = html.fromstring(bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True))
         frag = self._process_images(frag, instance_slug)
+        frag = self._process_schema(frag)
         frag = self._restrict_iframe_host(frag)
         frag = self._process_links(frag)
         frag = self._verify_id_namespace(frag, instance_slug)
         frag = self._verify_link_namespace(frag, instance_slug)
         if self.classes:  # if you don't specify any, it is assumed allow-all
             frag = self._filter_classes(frag)
-        if frag.tag == "div":
+        if frag.tag == "div" or frag.tag == "body":
             value = "".join([frag.text or "", "".join([tostring(child, encoding=unicode) for child in frag.iterchildren()])])
         else:
             value = tostring(frag, encoding=unicode)
-        value = bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True)
         return value
 
     def _process_images(self, frag, extra_path):
@@ -76,6 +76,11 @@ class HTMLSanitizerMixin(object):
             name = default_storage.save(os.path.join('images', 'aloha-uploads', extra_path, ".".join((img_name, extension))),
                                         ContentFile(base64.b64decode(protocol_matcher.group("data"))))
             img.attrib['src'] = posixpath.join(settings.MEDIA_URL, name)
+        return frag
+
+    def _process_schema(self, frag):
+        for img in frag.cssselect('img'):
+            img.attrib['itemprop'] = 'image'
         return frag
 
     def _restrict_iframe_host(self, frag):
