@@ -74,8 +74,10 @@ class HTMLSanitizerMixin(object):
             if base != "image":
                 continue
             img_name = img.attrib.get('title', base) + str(i)
+
+            imgdata = base64.b64decode(protocol_matcher.group("data"))
             name = default_storage.save(os.path.join('images', 'aloha-uploads', extra_path, ".".join((img_name, extension))),
-                                        ContentFile(base64.b64decode(protocol_matcher.group("data"))))
+                                        ContentFile(imgdata))
             img.attrib['src'] = posixpath.join(settings.MEDIA_URL, name)
         return frag
 
@@ -203,6 +205,11 @@ try:
             data = self.sanitize(data, instance_slug)
 
             return data
+
+        def to_representation(self, value):
+            if isinstance(value, six.binary_type):
+                value = value.decode("utf-8") #TODO: py3: remove decode as python should work with unicode properly
+            return super(HTMLSerializerField, self).to_representation(value)
 except ImportError:
     pass
 
