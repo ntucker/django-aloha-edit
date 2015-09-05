@@ -82,9 +82,17 @@ class HTMLSanitizerMixin(object):
                 style = CSS21Parser().parse_style_attr(img.attrib['style'])[0]
                 style = {dec.name: dec.value[0].value for dec in style if dec.name in ['width', 'height']}
                 imgproc = Image.open(BytesIO(imgdata))
+                if imgproc.mode == "P":
+                    imgproc = imgproc.convert("RGB")
                 imgproc = imgproc.resize((style['width'], style['height']), Image.ANTIALIAS)
+                params = {}
+                if imgproc.mode in ["RGB", "L", "CMYK"]:
+                    format = "jpeg"
+                else:
+                    format = "png"
+                    params['optimize'] = True
                 imgbuffer = BytesIO()
-                imgproc.save(imgbuffer, format="jpeg")
+                imgproc.save(imgbuffer, format=format, **params)
                 imgdata = imgbuffer.getvalue()
             name = default_storage.save(os.path.join('images', 'aloha-uploads', extra_path, ".".join((img_name, extension))),
                                         ContentFile(imgdata))
