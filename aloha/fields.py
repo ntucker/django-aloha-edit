@@ -16,11 +16,13 @@ import os.path
 import posixpath
 import re
 import urlparse
+from io import BytesIO
 
 import bleach
 from lxml.html import tostring
-
 import lxml.html as html
+from tinycss.css21 import CSS21Parser
+from PIL import Image
 
 from .widgets import AlohaWidget
 
@@ -76,6 +78,14 @@ class HTMLSanitizerMixin(object):
             img_name = img.attrib.get('title', base) + str(i)
 
             imgdata = base64.b64decode(protocol_matcher.group("data"))
+            if 'style' in img.attrib and 'width' in img.attrib['style'] and 'height' in img.attrib['style']:
+                style = CSS21Parser().parse_style_attr(img.attrib['style'])[0]
+                style = {dec.name: dec.value[0].value for dec in style if dec.name in ['width', 'height']}
+                imgproc = Image.open(BytesIO(imgdata))
+                imgproc = imgproc.resize((style['width'], style['height']), Image.ANTIALIAS)
+                imgbuffer = BytesIO()
+                imgproc.save(imgbuffer, format="jpeg")
+                imgdata = imgbuffer.getvalue()
             name = default_storage.save(os.path.join('images', 'aloha-uploads', extra_path, ".".join((img_name, extension))),
                                         ContentFile(imgdata))
             img.attrib['src'] = posixpath.join(settings.MEDIA_URL, name)
