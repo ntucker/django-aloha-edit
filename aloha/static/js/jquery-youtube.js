@@ -15,7 +15,7 @@ define([
 			$youtube.attr({itemprop: 'video', itemscope:'', itemtype:"http://schema.org/VideoObject"});
 			var metastr = (
     	        '<meta itemprop="thumbnail" content="'+thumbsrc+'" />'
-    	        +'<meta itemprop="thumbnailURL" content="'+thumbsrc+'" />'
+    	        +'<meta itemprop="thumbnailURL" content="https:'+thumbsrc+'" />'
     	        +'<meta itemprop="embedUrl" content="'+embedUrl+'" />'
     	    );
 			if (meta !== undefined) {
@@ -24,7 +24,7 @@ define([
 			    }
 			}
 			$youtube.append($(metastr + '<span class="fa-stack play"><i class="fa fa-circle fa-stack-1x"></i> <i class="fa fa-youtube-play fa-stack-1x"></i></span>'));
-			$youtube.after($('<meta itemprop="image" content="'+thumbsrc+'">'))
+			$youtube.after($('<meta itemprop="image" content="https:'+thumbsrc+'">'))
 			if (trigger) {
 				$youtube.click(function(event) {
 					$(this).html('<iframe src="'+embedUrl+'" allowfullscreen>');
