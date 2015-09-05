@@ -83,14 +83,13 @@ class HTMLSanitizerMixin(object):
                 style = {dec.name: dec.value[0].value for dec in style if dec.name in ['width', 'height']}
                 imgproc = Image.open(BytesIO(imgdata))
                 if imgproc.mode == "P":
-                    imgproc = imgproc.convert("RGB")
-                imgproc = imgproc.resize((style['width'], style['height']), Image.ANTIALIAS)
+                    if len(imgproc.palette.getdata()[1]) > 256:
+                        imgproc = imgproc.convert("RGB")
+                imgproc = imgproc.resize((style['width'], style['height']), Image.LANCZOS)
                 params = {}
-                if imgproc.mode in ["RGB", "L", "CMYK"]:
-                    format = "jpeg"
-                else:
+                format = extension
+                if format=="jpg" and imgproc.mode not in ["RGB", "L", "CMYK"]:
                     format = "png"
-                    params['optimize'] = True
                 imgbuffer = BytesIO()
                 imgproc.save(imgbuffer, format=format, **params)
                 imgdata = imgbuffer.getvalue()
