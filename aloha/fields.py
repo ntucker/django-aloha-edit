@@ -86,7 +86,7 @@ class HTMLSanitizerMixin(object):
 
     def _trim_paragraphs(self, frag):
         for p in frag.cssselect('p'):
-            if not list(p) and not p.text.strip() and not next(p.itersiblings(), None) and not next(p.itersiblings(preceding=True), None):
+            if not list(p) and (not p.text or not p.text.strip()) and not next(p.itersiblings(), None) and not next(p.itersiblings(preceding=True), None):
                 frag.remove(p)
         return frag
 
