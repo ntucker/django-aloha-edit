@@ -49,6 +49,7 @@ class HTMLSanitizerMixin(object):
 
     def sanitize(self, value, instance_slug):
         frag = html.fromstring(bleach.clean(value, tags=self.tags, attributes=self.attributes, styles=self.styles, strip=True))
+        frag = self._trim_paragraphs(frag)
         frag = self._process_images(frag, instance_slug)
         frag = self._process_schema(frag)
         frag = self._restrict_iframe_host(frag)
@@ -81,6 +82,12 @@ class HTMLSanitizerMixin(object):
     def _process_schema(self, frag):
         for img in frag.cssselect('img'):
             img.attrib['itemprop'] = 'image'
+        return frag
+
+    def _trim_paragraphs(self, frag):
+        for p in frag.cssselect('p'):
+            if not list(p) and not p.text.strip() and not next(p.itersiblings(), None) and not next(p.itersiblings(preceding=True), None):
+                frag.remove(p)
         return frag
 
     def _restrict_iframe_host(self, frag):
