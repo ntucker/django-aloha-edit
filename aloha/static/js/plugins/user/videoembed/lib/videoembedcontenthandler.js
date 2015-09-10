@@ -26,7 +26,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
     /* Native & common providers */
     var providers = [
-		new OEmbedProvider("youtube", "video", ["^[^\\sy]*youtube\\.com/watch.+v=([\\w-]+)(.+t=(([\\d]+)m)?([\\d]+)s)?(.+end=([\\d]+))?(.+list=([\\w\\d]+))?\\S*$", "^[^\sy]*youtu\\.be/([\\w-]+)(.+t=(([\\d]+)m)?([\\d]+)s)?(.+end=([\\d]+))?(.+list=([\\w\\d]+))?\\S*$"]), // "http://www.youtube.com/videoembed"	(no jsonp)
+		new OEmbedProvider("youtube", "video", ["^[^\\sy]*youtube\\.com/watch.+v=([\\w-]+)(.+t=(([\\d]+)m)?([\\d]+)s)?(.+end=([\\d]+))?(.+list=([\\w\\d]+))?\\S*$", "^https?://youtu\\.be/([\\w-]+)(.+t=(([\\d]+)m)?([\\d]+)s)?(.+end=([\\d]+))?(.+list=([\\w\\d]+))?\\S*$"]), // "http://www.youtube.com/videoembed"	(no jsonp)
 		new OEmbedProvider("blip", "video", ["^[^\\sb]*blip\\.tv/play/([\\w\%-]+)\\.(x|html)\\S*$"])
 	];
 	/**
