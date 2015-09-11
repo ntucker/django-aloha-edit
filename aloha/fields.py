@@ -106,7 +106,7 @@ class HTMLSanitizerMixin(object):
     def _trim_paragraphs(self, frag):
         for p in frag.cssselect('p'):
             if not list(p) and (not p.text or not p.text.strip()) and not next(p.itersiblings(), None) and not next(p.itersiblings(preceding=True), None):
-                frag.remove(p)
+                p.getparent().remove(p)
         return frag
 
     def _restrict_iframe_host(self, frag):
