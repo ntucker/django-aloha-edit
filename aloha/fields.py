@@ -158,7 +158,7 @@ class HTMLSanitizerMixin(object):
         return frag
 
 
-class HTMLField(six.with_metaclass(models.SubfieldBase, HTMLSanitizerMixin, models.TextField)):
+class HTMLField(HTMLSanitizerMixin, models.TextField):
     """This stores HTML content to be displayed raw to the user.
     The content is cleaned using bleach to restrict the set of HTML used.
     The Aloha Editor widget is used for form editing."""
@@ -182,6 +182,9 @@ class HTMLField(six.with_metaclass(models.SubfieldBase, HTMLSanitizerMixin, mode
         defaults = {'widget': AlohaWidget()}
         defaults.update(kwargs)
         return super(HTMLField, self).formfield(**defaults)
+
+    def from_db_value(self, value, expression, connection, context):
+        return mark_safe(value)
 
     def to_python(self, value):
         return mark_safe(value)
