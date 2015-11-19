@@ -17,6 +17,7 @@ import posixpath
 import re
 import urlparse
 from io import BytesIO
+import uuid
 
 import bleach
 from lxml.html import tostring
@@ -214,10 +215,14 @@ try:
             if self.source_field:
                 if self.parent.instance:
                     source_article = getattr(self.parent.instance, self.source_field)
-                else:
+                    instance_slug = slugify(force_text(source_article.title))
+                elif hasattr(self.parent, 'initial_data'):
                     source_article = self.parent.fields[self.source_field].to_internal_value(self.parent.initial_data[self.source_field])
-                instance_slug = slugify(force_text(source_article.title))
-            elif 'title' in self.parent.initial_data:
+                    instance_slug = slugify(force_text(source_article.title))
+                else:
+                    logger.error('Using HTMLField without initial_data set (data passed to serializer) is not supported')
+                instance_slug = force_text(uuid.uuid4())
+            elif hasattr(self.parent, 'initial_data') and 'title' in self.parent.initial_data:
                 instance_slug = slugify(force_text(self.parent.initial_data['title']))
             else:
                 logger.error('Using HTMLField with no title is not currently supported')
